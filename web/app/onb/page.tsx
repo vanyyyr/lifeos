@@ -126,7 +126,7 @@ export default function OnboardingPage() {
 
   const isCategoryComplete = () => {
     return categoryQuestions.every(q => {
-      if (!q.required) return true
+      if (!(q as any).required) return true
       const value = answers[q.key]
       return value !== undefined && value !== '' && value !== null
     })
