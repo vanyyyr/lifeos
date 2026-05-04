@@ -42,14 +42,25 @@ export async function POST(request: NextRequest) {
       userId = newUser.id
     }
     
-    // Save profile data (we catch the error and log it instead of throwing to avoid blocking user if form fields don't exactly match DB schema)
+    // Save profile data
+    // We map the safe fields that exist in all schema versions,
+    // and store the complete unadulterated form data into `raw_data` JSONB
+    const safeFields = ['name', 'age', 'sleep_time', 'wake_time', 'sport_type', 'water_intake']
+    const profilePayload: any = {
+      user_id: userId,
+      updated_at: new Date().toISOString(),
+      raw_data: body // This ensures 100% of the answers are saved!
+    }
+    
+    safeFields.forEach(field => {
+      if (body[field] !== undefined) {
+        profilePayload[field] = body[field]
+      }
+    })
+
     const { error: profileError } = await supabase
       .from('user_profiles')
-      .upsert({
-        user_id: userId,
-        ...body,
-        updated_at: new Date().toISOString()
-      })
+      .upsert(profilePayload)
     
     if (profileError) {
       console.error('Profile upsert error (non-fatal):', profileError.message)

@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   if (!supabase) {
     return NextResponse.json({ error: 'Database not configured' }, { status: 503 })
   }
-  const telegramId = request.headers.get('x-telegram-id') || 'web-user-default'
+  const telegramId = request.headers.get('x-telegram-id') || '0'
   
   try {
     // Get user
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       .from('users')
       .select('id')
       .eq('telegram_id', telegramId)
-      .single()
+      .maybeSingle()
     
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       .select('*')
       .eq('user_id', userId)
       .eq('date', new Date().toISOString().split('T')[0])
-      .single()
+      .maybeSingle()
     
     // Get weekly stats
     const weekAgo = new Date()
@@ -81,14 +81,14 @@ export async function POST(request: NextRequest) {
   }
   try {
     const body = await request.json()
-    const telegramId = request.headers.get('x-telegram-id') || body.telegram_id || 'web-user-default'
+    const telegramId = request.headers.get('x-telegram-id') || body.telegram_id || '0'
     
     // Get user
     const { data: user } = await supabase
       .from('users')
       .select('id')
       .eq('telegram_id', telegramId)
-      .single()
+      .maybeSingle()
     
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
