@@ -23,6 +23,13 @@ class Database:
             db_url = os.getenv("DATABASE_URL")
             if db_url:
                 self.conn = await asyncpg.create_pool(dsn=db_url, min_size=1, max_size=10)
+            else:
+                # Try connection via Supabase
+                self.supabase_url = os.getenv("SUPABASE_URL")
+                self.supabase_key = os.getenv("SUPABASE_ANON_KEY")
+                if self.supabase_url and self.supabase_key:
+                    # Will use Supabase REST API instead
+                    pass
     
     async def close(self):
         """Close connection"""

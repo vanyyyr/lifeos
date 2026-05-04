@@ -1,0 +1,11 @@
+# Runtime
+runtime = "python"
+
+# Install
+prebuild = "pip install -r requirements.txt"
+
+# Start
+start = "python main.py"
+
+[settings]
+pythonVersion = "3.11"
