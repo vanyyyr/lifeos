@@ -4,6 +4,8 @@ import { createClient } from '@supabase/supabase-js'
 const botToken = process.env.TELEGRAM_BOT_TOKEN || ''
 const supabaseUrl = process.env.SUPABASE_URL || ''
 const supabaseKey = process.env.SUPABASE_ANON_KEY || ''
+const XIAOMI_API_KEY = process.env.XIAOMI_API_KEY || ''
+const MOONSHOT_BASE_URL = 'https://api.moonshot.cn/v1'
 
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
@@ -77,8 +79,42 @@ export async function POST(request: NextRequest) {
         }
         break
         
+      case '/coach':
+        responseText = `🤖 <b>AI Коуч</b>\n\nРасскажи, как дела? Или задай вопрос о жизни, тренировках, питании...\n\n<i>Напиши мне что угодно!</i>`
+        break
+        
       default:
-        responseText = `Привет, ${name}! 👋\nЯ получил: ${text}\n\nНапиши /help`
+        // Attempt AI response if text is present
+        if (text.trim() && XIAOMI_API_KEY) {
+          try {
+            const aiRes = await fetch(`${MOONSHOT_BASE_URL}/chat/completions`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${XIAOMI_API_KEY}`
+              },
+              body: JSON.stringify({
+                model: 'moonshot-v1-8k',
+                messages: [
+                  { role: 'system', content: 'Ты LifeOS, AI-коуч. Отвечай кратко, мотивирующе, на русском, используя эмодзи.' },
+                  { role: 'user', content: text }
+                ],
+                temperature: 0.7,
+                max_tokens: 500
+              })
+            })
+            if (aiRes.ok) {
+              const aiData = await aiRes.json()
+              responseText = aiData.choices?.[0]?.message?.content || 'Извини, не удалось сформулировать ответ.'
+            } else {
+              responseText = `Привет, ${name}! 👋\nЯ получил твоё сообщение, но AI сейчас недоступен.\n\nНапиши /help для списка команд.`
+            }
+          } catch (e) {
+            responseText = `Привет, ${name}! 👋\nAI сервис сейчас недоступен.\n\nНапиши /help для списка команд.`
+          }
+        } else {
+          responseText = `Привет, ${name}! 👋\nЯ получил: ${text}\n\nAI ключ не настроен. Напиши /help`
+        }
     }
     
     // Send to Telegram
