@@ -1,0 +1,20 @@
+.env
+.env.local
+node_modules/
+.next/
+.vercel/
+*.log
+.DS_Store
+__pycache__/
+*.pyc
+bot/__pycache__/
+.venv/
+
+# Database
+*.db
+*.sqlite3
+
+# Secrets
+secrets/
+keys/
+tokens/
