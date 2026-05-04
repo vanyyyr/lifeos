@@ -250,7 +250,7 @@ class AICore:
         # Simple parsing - in production would use more robust method
         result = {
             "analysis": analysis,
-            "scores": {},
+            "scores": [],
             "priorities": [],
             "schedule": {},
             "habits": []

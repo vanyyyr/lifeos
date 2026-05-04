@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "cd web && next dev",
-    "build": "cd web && next build",
-    "start": "cd web && next start",
-    "lint": "cd web && next lint"
+    "dev": "cd web && BROWSERSLIST=defaults next dev",
+    "build": "cd web && BROWSERSLIST=defaults next build",
+    "start": "cd web && BROWSERSLIST=defaults next start",
+    "lint": "cd web && BROWSERSLIST=defaults next lint"
   },
   "dependencies": {
     "next": "14.1.0",

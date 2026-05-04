@@ -5,7 +5,18 @@ import { useRouter } from 'next/navigation'
 import { ArrowRight, ArrowLeft, Check, Bot } from 'lucide-react'
 
 // Onboarding questions by category
-const questions = {
+interface Question {
+  key: string
+  label: string
+  type: string
+  required?: boolean
+  options?: string[]
+  min?: number
+  max?: number
+  default?: boolean
+}
+
+const questions: Record<string, Question[]> = {
   general: [
     { key: 'name', label: 'Как тебя зовут?', type: 'text', required: true },
     { key: 'age', label: 'Сколько тебе лет?', type: 'number', required: true },
@@ -78,7 +89,7 @@ const questions = {
   goals: [
     { key: 'goal_1year', label: 'Главная цель на год?', type: 'text', required: true },
     { key: 'goal_3years', label: 'Главная цель на 3 года?', type: 'text', required: false },
-    { key: 'success_definition', label: 'Что для теб�� ус��ех?', type: 'text', required: true },
+    { key: 'success_definition', label: 'Что для тебя успех?', type: 'text', required: true },
   ],
   notifications: [
     { key: 'notify_morning', label: 'Утреннее напоминание (07:00)?', type: 'checkbox', default: true },
@@ -89,14 +100,12 @@ const questions = {
   ],
 }
 
-type CategoryKey = keyof typeof questions
-
-const categoryOrder: CategoryKey[] = [
+const categoryOrder: string[] = [
   'general', 'sleep', 'sport', 'nutrition', 'habits', 
   'productivity', 'development', 'mental', 'spiritual', 'goals', 'notifications'
 ]
 
-const categoryNames: Record<CategoryKey, string> = {
+const categoryNames: Record<string, string> = {
   general: '📋 Общее',
   sleep: '💤 Сон',
   sport: '🏋️ Спорт',
@@ -126,7 +135,7 @@ export default function OnboardingPage() {
 
   const isCategoryComplete = () => {
     return categoryQuestions.every(q => {
-      if (!(q as any).required) return true
+      if (!q.required) return true
       const value = answers[q.key]
       return value !== undefined && value !== '' && value !== null
     })
@@ -207,7 +216,7 @@ export default function OnboardingPage() {
           <div key={question.key} className="space-y-2">
             <label className="block text-gray-300 font-medium">
               {question.label}
-              {question.required && <span className="text-[#5641FF]"> *</span>}
+              {'required' in question && question.required && <span className="text-[#5641FF]"> *</span>}
             </label>
             
             {question.type === 'text' && (
