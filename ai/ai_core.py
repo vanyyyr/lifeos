@@ -30,7 +30,7 @@ class AICore:
     """AI Core - handles multiple LLM providers"""
     
     def __init__(self):
-        self.xiaomi_api_key = os.getenv("XIAOMI_API_KEY", "sk-seqeme655ttmcxn1cglxlgwpw9t0k4987i39pxkhg9mg67p6")
+        self.xiaomi_api_key = os.getenv("XIAOMI_API_KEY", "")
         self.xiaomi_base_url = "https://api.moonshot.cn/v1"
         self.model = "moonshot-v1-8k"
         

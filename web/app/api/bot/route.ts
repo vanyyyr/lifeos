@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const botToken = process.env.TELEGRAM_BOT_TOKEN || '8606509963:AAHQCdY4_v9RvBCUug_oiB7_lpj1cL_3EnQ'
-const supabaseUrl = process.env.SUPABASE_URL || 'https://liupfnbqncxzdvvqzmrb.supabase.co'
-const supabaseKey = process.env.SUPABASE_ANON_KEY || 'sb_publishable_QcVLms3FBecYD7hZtNJBSg_eteR1hSh'
+const botToken = process.env.TELEGRAM_BOT_TOKEN || ''
+const supabaseUrl = process.env.SUPABASE_URL || ''
+const supabaseKey = process.env.SUPABASE_ANON_KEY || ''
 
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,24 +20,28 @@ export async function POST(request: NextRequest) {
     const text = message.text || ''
     const name = message.from?.first_name || 'друг'
     
-    // Get or create user
-    let { data: user } = await supabase
-      .from('users')
-      .select('id, name')
-      .eq('telegram_id', chatId)
-      .single()
-    
-    if (!user) {
-      const { data: newUser } = await supabase
+    // Get or create user (only if DB connected)
+    let user = null
+    if (supabase) {
+      const { data } = await supabase
         .from('users')
-        .insert({
-          telegram_id: chatId,
-          name: name,
-          username: message.from?.username
-        })
-        .select()
+        .select('id, name')
+        .eq('telegram_id', chatId)
         .single()
-      user = newUser
+      user = data
+      
+      if (!user) {
+        const { data: newUser } = await supabase
+          .from('users')
+          .insert({
+            telegram_id: chatId,
+            name: name,
+            username: message.from?.username
+          })
+          .select()
+          .single()
+        user = newUser
+      }
     }
     
     let responseText = ''
@@ -64,7 +68,13 @@ export async function POST(request: NextRequest) {
         break
         
       case '/app':
-        responseText = `📱 <b>LifeOS Mini App</b>\n\nhttps://lifeos-khaki-one.vercel.app/onb`
+        responseText = `📱 <b>LifeOS Mini App</b>\n\nhttps://lifeos-khaki-one.vercel.app/dash`
+        replyMarkup = {
+          inline_keyboard: [
+            [{ text: '🚀 Открыть LifeOS', web_app: { url: 'https://lifeos-khaki-one.vercel.app/dash' } }],
+            [{ text: '📋 Онбординг', web_app: { url: 'https://lifeos-khaki-one.vercel.app/onb' } }]
+          ]
+        }
         break
         
       default:

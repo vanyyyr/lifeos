@@ -1,6 +1,9 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "cd web && BROWSERSLIST=defaults next build",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "outputDirectory": "web/.next"
+  "outputDirectory": "web/.next",
+  "env": {
+    "BROWSERSLIST": "defaults"
+  }
 }

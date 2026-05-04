@@ -272,6 +272,27 @@ export default function Dashboard() {
             <StatRow icon="📖" label="Прочитано" value="45 стр." max="" progress={45} />
           </div>
         </section>
+
+        {/* Analytics Card */}
+        <section className={`py-4 transition-all duration-500 delay-500 ${animateIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <button 
+            className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-600/80 to-teal-500/80 rounded-2xl p-5 flex items-center justify-between group hover:from-emerald-600 hover:to-teal-500 transition-all active:scale-[0.98]"
+            onClick={() => router.push('/dash/analytics')}
+            id="analytics-btn"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-all" />
+            <div className="flex items-center gap-4 relative">
+              <div className="w-12 h-12 bg-white/10 backdrop-blur rounded-xl flex items-center justify-center text-2xl">
+                📊
+              </div>
+              <div className="text-left">
+                <div className="font-bold">Аналитика</div>
+                <div className="text-sm text-white/60">Графики прогресса и статистика</div>
+              </div>
+            </div>
+            <ChevronRight size={20} className="text-white/40 group-hover:text-white/70 relative transition-colors" />
+          </button>
+        </section>
       </div>
     </main>
   )

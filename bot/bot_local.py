@@ -9,7 +9,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from database_simple import Database
 
 # Config from environment
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8606509963:AAHQCdY4_v9RvBCUug_oiB7_lpj1cL_3EnQ")
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 APP_URL = os.getenv("NEXT_PUBLIC_APP_URL", "https://lifeos-khaki-one.vercel.app")
 
 # Database

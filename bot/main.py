@@ -22,7 +22,7 @@ from database import Database
 from ai_core import AICore
 
 # Config
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8606509963:AAHQCdY4_v9RvBCUug_oiB7_lpj1cL_3EnQ")
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 
 # Logging
 logging.basicConfig(level=logging.INFO)
@@ -214,7 +214,7 @@ async def cmd_app(message: Message):
             inline_keyboard=[
                 [InlineKeyboardButton(
                     text="🚀 Открыть LifeOS",
-                    web_app=WebAppInfo(url="https://your-domain.vercel.app")
+                    web_app=WebAppInfo(url="https://lifeos-khaki-one.vercel.app/dash")
                 )]
             ]
         )
