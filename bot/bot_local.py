@@ -7,6 +7,18 @@ import asyncio
 from telegram import Bot, Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from database_simple import Database
+import os
+
+# Manual .env.local loader
+try:
+    with open("../.env.local", "r") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#"):
+                key, val = line.split("=", 1)
+                os.environ[key] = val
+except Exception:
+    pass
 
 # Config from environment
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")

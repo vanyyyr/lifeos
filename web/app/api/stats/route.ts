@@ -9,11 +9,7 @@ export async function GET(request: NextRequest) {
   if (!supabase) {
     return NextResponse.json({ error: 'Database not configured' }, { status: 503 })
   }
-  const telegramId = request.headers.get('x-telegram-id')
-  
-  if (!telegramId) {
-    return NextResponse.json({ error: 'Telegram ID required' }, { status: 400 })
-  }
+  const telegramId = request.headers.get('x-telegram-id') || 'web-user-default'
   
   try {
     // Get user
@@ -85,11 +81,7 @@ export async function POST(request: NextRequest) {
   }
   try {
     const body = await request.json()
-    const telegramId = request.headers.get('x-telegram-id') || body.telegram_id
-    
-    if (!telegramId) {
-      return NextResponse.json({ error: 'Telegram ID required' }, { status: 400 })
-    }
+    const telegramId = request.headers.get('x-telegram-id') || body.telegram_id || 'web-user-default'
     
     // Get user
     const { data: user } = await supabase

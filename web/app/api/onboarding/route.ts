@@ -13,11 +13,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     
     // Get telegram_id from headers or body (for bot integration)
-    const telegramId = request.headers.get('x-telegram-id') || body.telegram_id
-    
-    if (!telegramId) {
-      return NextResponse.json({ error: 'Telegram ID required' }, { status: 400 })
-    }
+    const telegramId = request.headers.get('x-telegram-id') || body.telegram_id || 'web-user-default'
     
     // Check if user exists
     let { data: user } = await supabase
