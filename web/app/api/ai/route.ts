@@ -186,6 +186,6 @@ export async function GET() {
   return NextResponse.json({ 
     status: 'ok', 
     model: MODEL,
-    hasApiKey: !!XIAOMI_API_KEY 
+    hasApiKey: !!AI_API_KEY 
   })
 }
