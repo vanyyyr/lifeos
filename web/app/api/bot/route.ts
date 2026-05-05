@@ -107,10 +107,11 @@ export async function POST(request: NextRequest) {
               const aiData = await aiRes.json()
               responseText = aiData.choices?.[0]?.message?.content || 'Извини, не удалось сформулировать ответ.'
             } else {
-              responseText = `Привет, ${name}! 👋\nЯ получил твоё сообщение, но AI сейчас недоступен.\n\nНапиши /help для списка команд.`
+              const errText = await aiRes.text()
+              responseText = `Привет, ${name}! 👋\nОшибка API ${aiRes.status}: ${errText}`
             }
-          } catch (e) {
-            responseText = `Привет, ${name}! 👋\nAI сервис сейчас недоступен.\n\nНапиши /help для списка команд.`
+          } catch (e: any) {
+            responseText = `Привет, ${name}! 👋\nСетевая ошибка: ${e.message}`
           }
         } else {
           responseText = `Привет, ${name}! 👋\nЯ получил: ${text}\n\nAI ключ не настроен. Напиши /help`
