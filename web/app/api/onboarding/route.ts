@@ -43,13 +43,14 @@ export async function POST(request: NextRequest) {
     }
     
     // Save profile data
-    // We map the safe fields that exist in all schema versions,
-    // and store the complete unadulterated form data into `raw_data` JSONB
-    const safeFields = ['name', 'age', 'sleep_time', 'wake_time', 'sport_type', 'water_intake']
+    // We map the safe fields that exist in all schema versions.
+    // To ensure 100% of the answers are saved for AI analysis without needing a manual DB schema update,
+    // we store the complete unadulterated form data into the `habits` JSONB column which exists in the schema.
+    const safeFields = ['age', 'sleep_time', 'wake_time', 'sport_type', 'water_intake', 'gender', 'city', 'occupation']
     const profilePayload: any = {
       user_id: userId,
       updated_at: new Date().toISOString(),
-      raw_data: body // This ensures 100% of the answers are saved!
+      habits: body // <--- Safely store ALL data here for AI to read
     }
     
     safeFields.forEach(field => {

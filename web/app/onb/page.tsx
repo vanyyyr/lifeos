@@ -157,11 +157,22 @@ export default function OnboardingPage() {
     setIsSubmitting(true)
     
     try {
+      let telegramId = 0
+      if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+        telegramId = (window as any).Telegram.WebApp.initDataUnsafe?.user?.id || 0
+      }
+      if (!telegramId) telegramId = 123456789 // Fallback for local testing
+      
+      const payload = {
+        ...answers,
+        telegram_id: telegramId
+      }
+
       // Save to API
       const response = await fetch('/api/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(answers)
+        body: JSON.stringify(payload)
       })
       
       if (response.ok) {

@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 
 const AI_API_KEY = process.env.XIAOMI_API_KEY || process.env.OPENAI_API_KEY || ''
 const AI_BASE_URL = process.env.AI_BASE_URL || 'https://api.xiaomimimo.com/v1'
 const MODEL = process.env.AI_MODEL || 'mimo-v2.5'
+
+const supabaseUrl = process.env.SUPABASE_URL || ''
+const supabaseKey = process.env.SUPABASE_ANON_KEY || ''
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
 const SYSTEM_PROMPT = `Ты - LifeOS, персональный AI-коуч для трекинга и развития личности.
 
@@ -28,7 +33,7 @@ interface ChatMessage {
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, history = [] } = await request.json()
+    const { message, history = [], telegramId } = await request.json()
 
     if (!message) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
@@ -42,9 +47,21 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Fetch user context from Supabase to personalize AI
+    let userContext = ''
+    if (telegramId && supabase) {
+      const { data: user } = await supabase.from('users').select('id').eq('telegram_id', telegramId).maybeSingle()
+      if (user) {
+        const { data: profile } = await supabase.from('user_profiles').select('habits').eq('user_id', user.id).maybeSingle()
+        if (profile && profile.habits) {
+          userContext = `\n\nТекущие данные пользователя:\n${JSON.stringify(profile.habits, null, 2)}`
+        }
+      }
+    }
+
     // Build messages array
     const messages: ChatMessage[] = [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'system', content: SYSTEM_PROMPT + userContext },
       ...history.slice(-10).map((h: any) => ({
         role: h.role as 'user' | 'assistant',
         content: h.content

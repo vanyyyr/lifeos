@@ -89,6 +89,18 @@ export async function POST(request: NextRequest) {
         // Attempt AI response if text is present
         if (text.trim() && AI_API_KEY) {
           try {
+            // Fetch user context from Supabase to personalize AI
+            let userContext = ''
+            if (supabase) {
+              const { data: user } = await supabase.from('users').select('id').eq('telegram_id', chatId).maybeSingle()
+              if (user) {
+                const { data: profile } = await supabase.from('user_profiles').select('habits').eq('user_id', user.id).maybeSingle()
+                if (profile && profile.habits) {
+                  userContext = `\nКонтекст пользователя (опирайся на него): ${JSON.stringify(profile.habits)}`
+                }
+              }
+            }
+
             const aiRes = await fetch(`${AI_BASE_URL}/chat/completions`, {
               method: 'POST',
               headers: {
@@ -98,7 +110,7 @@ export async function POST(request: NextRequest) {
               body: JSON.stringify({
                 model: AI_MODEL,
                 messages: [
-                  { role: 'system', content: 'Ты LifeOS, AI-коуч. Отвечай кратко, мотивирующе, на русском, используя эмодзи.' },
+                  { role: 'system', content: `Ты LifeOS, AI-коуч. Отвечай кратко, мотивирующе, на русском, используя эмодзи.${userContext}` },
                   { role: 'user', content: text }
                 ],
                 temperature: 0.7,

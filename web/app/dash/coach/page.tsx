@@ -82,12 +82,18 @@ export default function CoachPage() {
         .filter(m => m.source !== 'system')
         .map(m => ({ role: m.role, content: m.content }))
 
+      let telegramId = 0
+      if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
+        telegramId = (window as any).Telegram.WebApp.initDataUnsafe?.user?.id || 0
+      }
+
       const res = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: currentInput,
-          history
+          history,
+          telegramId
         })
       })
 
