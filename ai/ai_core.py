@@ -31,7 +31,7 @@ class AICore:
     
     def __init__(self):
         self.xiaomi_api_key = os.getenv("XIAOMI_API_KEY", "")
-        self.xiaomi_base_url = "https://api.moonshot.cn/v1"
+        self.xiaomi_base_url = os.getenv("MOONSHOT_BASE_URL", "https://api.moonshot.cn/v1")
         self.model = "moonshot-v1-8k"
         
         # Initialize Xiaomi client

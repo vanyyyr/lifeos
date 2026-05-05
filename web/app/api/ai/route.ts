@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const XIAOMI_API_KEY = process.env.XIAOMI_API_KEY || ''
-const MOONSHOT_BASE_URL = 'https://api.moonshot.cn/v1'
+const MOONSHOT_BASE_URL = process.env.MOONSHOT_BASE_URL || 'https://api.moonshot.cn/v1'
 const MODEL = 'moonshot-v1-8k'
 
 const SYSTEM_PROMPT = `Ты - LifeOS, персональный AI-коуч для трекинга и развития личности.

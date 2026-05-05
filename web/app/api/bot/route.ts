@@ -5,7 +5,7 @@ const botToken = process.env.TELEGRAM_BOT_TOKEN || ''
 const supabaseUrl = process.env.SUPABASE_URL || ''
 const supabaseKey = process.env.SUPABASE_ANON_KEY || ''
 const XIAOMI_API_KEY = process.env.XIAOMI_API_KEY || ''
-const MOONSHOT_BASE_URL = 'https://api.moonshot.cn/v1'
+const MOONSHOT_BASE_URL = process.env.MOONSHOT_BASE_URL || 'https://api.moonshot.cn/v1'
 
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
@@ -107,11 +107,10 @@ export async function POST(request: NextRequest) {
               const aiData = await aiRes.json()
               responseText = aiData.choices?.[0]?.message?.content || 'Извини, не удалось сформулировать ответ.'
             } else {
-              const errText = await aiRes.text()
-              responseText = `Привет, ${name}! 👋\nОшибка API ${aiRes.status}: ${errText}`
+              responseText = `Привет, ${name}! 👋\nAI сейчас недоступен (ошибка авторизации). Пожалуйста, проверь API-ключ в настройках Vercel.\n\nНапиши /help для списка команд.`
             }
           } catch (e: any) {
-            responseText = `Привет, ${name}! 👋\nСетевая ошибка: ${e.message}`
+            responseText = `Привет, ${name}! 👋\nСетевая ошибка при обращении к AI: ${e.message}`
           }
         } else {
           responseText = `Привет, ${name}! 👋\nЯ получил: ${text}\n\nAI ключ не настроен. Напиши /help`
