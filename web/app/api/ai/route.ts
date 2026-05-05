@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const XIAOMI_API_KEY = process.env.XIAOMI_API_KEY || ''
-const MOONSHOT_BASE_URL = process.env.MOONSHOT_BASE_URL || 'https://api.moonshot.cn/v1'
-const MODEL = 'moonshot-v1-8k'
+const AI_API_KEY = process.env.XIAOMI_API_KEY || process.env.OPENAI_API_KEY || ''
+const AI_BASE_URL = process.env.AI_BASE_URL || 'https://api.xiaomimimo.com/v1'
+const MODEL = process.env.AI_MODEL || 'mimo-v2.5'
 
 const SYSTEM_PROMPT = `Ты - LifeOS, персональный AI-коуч для трекинга и развития личности.
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
     }
 
-    if (!XIAOMI_API_KEY) {
+    if (!AI_API_KEY) {
       // Fallback to local responses when no API key
       return NextResponse.json({
         response: getFallbackResponse(message),
@@ -52,12 +52,11 @@ export async function POST(request: NextRequest) {
       { role: 'user', content: message }
     ]
 
-    // Call Moonshot API
-    const response = await fetch(`${MOONSHOT_BASE_URL}/chat/completions`, {
+    const response = await fetch(`${AI_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${XIAOMI_API_KEY}`
+        'Authorization': `Bearer ${AI_API_KEY}`
       },
       body: JSON.stringify({
         model: MODEL,
@@ -84,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       response: aiResponse,
-      source: 'moonshot',
+      source: 'ai',
       usage: data.usage
     })
 

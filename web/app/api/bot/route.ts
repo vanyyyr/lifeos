@@ -4,8 +4,10 @@ import { createClient } from '@supabase/supabase-js'
 const botToken = process.env.TELEGRAM_BOT_TOKEN || ''
 const supabaseUrl = process.env.SUPABASE_URL || ''
 const supabaseKey = process.env.SUPABASE_ANON_KEY || ''
-const XIAOMI_API_KEY = process.env.XIAOMI_API_KEY || ''
-const MOONSHOT_BASE_URL = process.env.MOONSHOT_BASE_URL || 'https://api.moonshot.cn/v1'
+// We keep reading XIAOMI_API_KEY since it's already in Vercel, but we treat it as a generic OpenAI-compatible key
+const AI_API_KEY = process.env.XIAOMI_API_KEY || ''
+const AI_BASE_URL = process.env.AI_BASE_URL || 'https://api.xiaomimimo.com/v1'
+const AI_MODEL = process.env.AI_MODEL || 'mimo-v2.5'
 
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
@@ -85,16 +87,16 @@ export async function POST(request: NextRequest) {
         
       default:
         // Attempt AI response if text is present
-        if (text.trim() && XIAOMI_API_KEY) {
+        if (text.trim() && AI_API_KEY) {
           try {
-            const aiRes = await fetch(`${MOONSHOT_BASE_URL}/chat/completions`, {
+            const aiRes = await fetch(`${AI_BASE_URL}/chat/completions`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${XIAOMI_API_KEY}`
+                'Authorization': `Bearer ${AI_API_KEY}`
               },
               body: JSON.stringify({
-                model: 'moonshot-v1-8k',
+                model: AI_MODEL,
                 messages: [
                   { role: 'system', content: 'Ты LifeOS, AI-коуч. Отвечай кратко, мотивирующе, на русском, используя эмодзи.' },
                   { role: 'user', content: text }
@@ -107,7 +109,8 @@ export async function POST(request: NextRequest) {
               const aiData = await aiRes.json()
               responseText = aiData.choices?.[0]?.message?.content || 'Извини, не удалось сформулировать ответ.'
             } else {
-              responseText = `Привет, ${name}! 👋\nAI сейчас недоступен (ошибка авторизации). Пожалуйста, проверь API-ключ в настройках Vercel.\n\nНапиши /help для списка команд.`
+              const errText = await aiRes.text()
+              responseText = `Привет, ${name}! 👋\nURL: ${AI_BASE_URL}\nОшибка ${aiRes.status}: ${errText}`
             }
           } catch (e: any) {
             responseText = `Привет, ${name}! 👋\nСетевая ошибка при обращении к AI: ${e.message}`

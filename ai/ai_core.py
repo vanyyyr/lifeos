@@ -30,14 +30,14 @@ class AICore:
     """AI Core - handles multiple LLM providers"""
     
     def __init__(self):
-        self.xiaomi_api_key = os.getenv("XIAOMI_API_KEY", "")
-        self.xiaomi_base_url = os.getenv("MOONSHOT_BASE_URL", "https://api.moonshot.cn/v1")
-        self.model = "moonshot-v1-8k"
+        self.api_key = os.getenv("XIAOMI_API_KEY") or os.getenv("OPENAI_API_KEY") or ""
+        self.base_url = os.getenv("AI_BASE_URL", "https://api.xiaomimimo.com/v1")
+        self.model = os.getenv("AI_MODEL", "mimo-v2.5")
         
-        # Initialize Xiaomi client
+        # Initialize client
         self.client = AsyncOpenAI(
-            api_key=self.xiaomi_api_key,
-            base_url=self.xiaomi_base_url
+            api_key=self.api_key,
+            base_url=self.base_url
         )
         
         # Conversation history
